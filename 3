@@ -1,0 +1,114 @@
+<?php
+
+class Customer {
+    private $firstName;
+    private $lastName;
+    private $addresses;
+
+    public function __construct($firstName, $lastName) {
+        $this->firstName = $firstName;
+        $this->lastName = $lastName;
+        $this->addresses = [];
+    }
+
+    public function getFirstName() {
+        return $this->firstName;
+    }
+
+    public function getLastName() {
+        return $this->lastName;
+    }
+
+    public function addAddress($address) {
+        $this->addresses[] = $address;
+    }
+
+    public function getAddresses() {
+        return $this->addresses;
+    }
+}
+
+class Cart {
+    private $customer;
+    private $items;
+    private $shippingAddress;
+
+    public function __construct($customer) {
+        $this->customer = $customer;
+        $this->items = [];
+        $this->shippingAddress = null;
+    }
+
+    public function addItem($item) {
+        $this->items[] = $item;
+    }
+
+    public function setShippingAddress($address) {
+        $this->shippingAddress = $address;
+    }
+
+    public function getSubtotal() {
+        $subtotal = 0;
+        foreach ($this->items as $item) {
+            $subtotal += $item['price'] * $item['quantity'];
+        }
+        return $subtotal;
+    }
+
+    public function getTotal() {
+        $subtotal = $this->getSubtotal();
+        $shippingCost = $this->calculateShippingCost();
+        $tax = $subtotal * 0.07; // Assuming 7% tax rate
+        $total = $subtotal + $shippingCost + $tax;
+        return $total;
+    }
+
+    private function calculateShippingCost() {
+        // Access the shipping rate API here to calculate the shipping cost based on the shipping address
+        // Replace the following placeholder code with actual API calls or logic
+        $shippingCost = 10; // Placeholder value
+        return $shippingCost;
+    }
+}
+
+// Example usage:
+
+// Create a customer
+$customer = new Customer('John', 'Doe');
+
+// Add addresses to the customer
+$address1 = ['line_1' => '123 Main St', 'line_2' => 'Apt 4B', 'city' => 'New York', 'state' => 'NY', 'zip' => '10001'];
+$address2 = ['line_1' => '456 Elm St', 'line_2' => 'Suite 10', 'city' => 'Los Angeles', 'state' => 'CA', 'zip' => '90001'];
+$customer->addAddress($address1);
+$customer->addAddress($address2);
+
+// Create a cart for the customer
+$cart = new Cart($customer);
+
+// Add items to the cart
+$item1 = ['id' => 1, 'name' => 'Product A', 'quantity' => 2, 'price' => 10];
+$item2 = ['id' => 2, 'name' => 'Product B', 'quantity' => 1, 'price' => 20];
+$cart->addItem($item1);
+$cart->addItem($item2);
+
+// Set the shipping address for the cart
+$shippingAddress = ['line_1' => '789 Oak St', 'city' => 'San Francisco', 'state' => 'CA', 'zip' => '94101'];
+$cart->setShippingAddress($shippingAddress);
+
+// Get the customer name
+$firstName = $customer->getFirstName();
+$lastName = $customer->getLastName();
+echo "Customer Name: $firstName $lastName\n";
+
+// Get the customer addresses
+$addresses = $customer->getAddresses();
+echo "Customer Addresses:\n";
+foreach ($addresses as $address) {
+    echo "Line 1: {$address['line_1']}, Line 2: {$address['line_2']}, City: {$address['city']}, State: {$address['state']}, Zip: {$address['zip']}\n";
+}
+
+// Get the subtotal and total for the cart
+$subtotal = $cart->getSubtotal();
+$total = $cart->getTotal();
+echo "Subtotal: $subtotal\n";
+echo "Total: $total\n";
